@@ -1059,18 +1059,28 @@ textarea {
   }
 }
 
-/* WiFi Status Indicator */
 .wifi-indicator {
+  left: 40%;
+  margin: 0 auto;
+  right: 40%;
+  top: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  max-width: fit-content;
   position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 0.5rem 1rem;
-  border-radius: 2rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0.7rem;
+  border-bottom-right-radius: 0.7em;
+  border-top-right-radius: 0;
+  /* border-radius: 2rem; */
   border: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
   transition: all 0.5s ease;
