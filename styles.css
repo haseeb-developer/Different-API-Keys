@@ -913,62 +913,29 @@ textarea {
 }
 
 /* ! WIFI STYLES */
-
-/* WiFi Status Styles */
-.wifi-status {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--glass-bg);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(10px);
-  z-index: 1000;
-}
-
-.wifi-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #00ff9d;
-  box-shadow: 0 0 10px #00ff9d, 0 0 20px #00ff9d;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
+/* ===== Ultra Advanced Offline UI ===== */
 .offline-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 10, 30, 0.95);
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    circle at center,
+    #0f0c29 0%,
+    #302b63 50%,
+    #24243e 100%
+  );
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
   color: white;
-  text-align: center;
-  padding: 2rem;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .offline-overlay.active {
@@ -976,33 +943,202 @@ textarea {
   pointer-events: all;
 }
 
-.offline-icon {
-  font-size: 5rem;
+.connection-animation {
+  position: absolute;
+  width: 300vmax;
+  height: 300vmax;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 0, 122, 0.2) 0%,
+    rgba(255, 0, 122, 0) 70%
+  );
+  animation: rotate 40s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.offline-content {
+  text-align: center;
+  padding: 2rem;
+  max-width: 90vw;
+  position: relative;
+}
+
+.connection-icon {
+  font-size: clamp(3rem, 10vw, 5rem);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.connection-icon::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 122, 0.4) 0%,
+    transparent 70%
+  );
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+}
+
+.offline-title {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #ff00cc, #3333ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.offline-subtitle {
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  opacity: 0.8;
   margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.connection-dots {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.connection-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00ff9d;
+  opacity: 0;
+  animation: dotPulse 1.5s infinite;
+}
+
+.connection-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.connection-dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.connection-dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 15px #00ff9d;
+  }
+}
+
+/* WiFi Status Indicator */
+.wifi-indicator {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  transition: all 0.5s ease;
+}
+
+.wifi-indicator.offline {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: rgba(255, 0, 0, 0.3);
+}
+
+.wifi-icon {
+  font-size: 1rem;
+  color: #00ff9d;
+}
+
+.wifi-icon.offline {
   color: #ff4d4d;
   animation: shake 0.5s infinite alternate;
 }
 
 @keyframes shake {
   0% {
-    transform: translateX(-5px);
+    transform: translateX(-2px);
   }
   100% {
-    transform: translateX(5px);
+    transform: translateX(2px);
   }
 }
 
-.offline-message {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, #ff4d4d, #f9cb28);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.wifi-text {
+  font-size: 0.9rem;
 }
 
-.offline-subtext {
-  font-size: 1rem;
-  opacity: 0.8;
-  max-width: 500px;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wifi-indicator {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .offline-content {
+    padding: 1rem;
+  }
+}
+
+/* Add this to disable scrolling when offline */
+body.offline-mode {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Make the offline overlay appear instantly */
+.offline-overlay {
+  transition: opacity 0.3s ease-out;
+}
+
+/* Add this for instant wifi indicator update */
+.wifi-indicator.offline .wifi-icon {
+  animation: shake 0.5s infinite alternate, flashRed 0.5s 3 alternate;
+}
+
+@keyframes flashRed {
+  0% {
+    color: #ff4d4d;
+  }
+  100% {
+    color: #ff0000;
+  }
 }
