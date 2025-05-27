@@ -13,9 +13,25 @@
       rel="stylesheet"
     />
     <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/otplib@12.0.1/otplib-browser.js"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="wifi-status" id="wifi-status">
+      <div class="wifi-dot"></div>
+      <span>Secure Connection Active</span>
+    </div>
+
+    <div class="offline-overlay" id="offline-overlay">
+      <i class="fas fa-wifi-slash offline-icon"></i>
+      <h2 class="offline-message">Connection Lost</h2>
+      <p class="offline-subtext">
+        Please reconnect to WiFi to access your secure vault. Your data is
+        protected but requires an internet connection for full functionality.
+      </p>
+      <div class="wifi-dot" style="margin-top: 2rem"></div>
+    </div>
     <div class="background"></div>
 
     <div class="container">
@@ -228,5 +244,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="script.js"></script>
+    <script src="./wifi.js"></script>
   </body>
 </html>
