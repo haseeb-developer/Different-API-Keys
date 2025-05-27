@@ -18,20 +18,30 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="wifi-status" id="wifi-status">
-      <div class="wifi-dot"></div>
-      <span>Secure Connection Active</span>
+    <div class="wifi-indicator" id="wifi-indicator">
+      <i class="fas fa-wifi wifi-icon"></i>
+      <span class="wifi-text">Secure Connection</span>
     </div>
 
     <div class="offline-overlay" id="offline-overlay">
-      <i class="fas fa-wifi-slash offline-icon"></i>
-      <h2 class="offline-message">Connection Lost</h2>
-      <p class="offline-subtext">
-        Please reconnect to WiFi to access your secure vault. Your data is
-        protected but requires an internet connection for full functionality.
-      </p>
-      <div class="wifi-dot" style="margin-top: 2rem"></div>
+      <div class="connection-animation"></div>
+      <div class="offline-content">
+        <div class="connection-icon">
+          <i class="fas fa-unlink"></i>
+        </div>
+        <h1 class="offline-title">Connection Interrupted</h1>
+        <p class="offline-subtitle">
+          Your secure vault requires an active internet connection.<br />
+          Please check your network settings and reconnect.
+        </p>
+        <div class="connection-dots">
+          <div class="connection-dot"></div>
+          <div class="connection-dot"></div>
+          <div class="connection-dot"></div>
+        </div>
+      </div>
     </div>
+
     <div class="background"></div>
 
     <div class="container">
