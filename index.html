@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeyVault Pro | Secure API Key Manager</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background"></div>
+
+    <div class="container">
+      <header class="header" data-motion="fadeInDown">
+        <div class="logo">
+          <i class="fas fa-key"></i>
+          <h1>KeyVault <span>Pro</span></h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="export-btn">
+            <i class="fas fa-file-export"></i> Export
+          </button>
+          <button class="btn btn-primary" id="import-btn">
+            <i class="fas fa-file-import"></i> Import
+          </button>
+          <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle" checked />
+            <label for="theme-toggle">
+              <i class="fas fa-moon"></i>
+              <i class="fas fa-sun"></i>
+              <span class="ball"></span>
+            </label>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="add-key-section" data-motion="fadeInUp">
+          <div class="glass-card">
+            <h2><i class="fas fa-plus-circle"></i> Add New Key</h2>
+            <form id="key-form">
+              <div class="form-group">
+                <label for="key-name"
+                  >Key Name <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="key-name"
+                  required
+                  placeholder="e.g. Stripe Production API"
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="key-type">Key Type</label>
+                  <select id="key-type">
+                    <option value="api">API Key</option>
+                    <option value="public">Public Key</option>
+                    <option value="private">Private Key</option>
+                    <option value="secret">Secret Key</option>
+                    <option value="token">Access Token</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="key-service">Service</label>
+                  <select id="key-service">
+                    <option value="custom">Custom</option>
+                    <option value="aws">AWS</option>
+                    <option value="stripe">Stripe</option>
+                    <option value="google">Google Cloud</option>
+                    <option value="azure">Azure</option>
+                    <option value="github">GitHub</option>
+                    <option value="twilio">Twilio</option>
+                    <option value="mailchimp">Mailchimp</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="key-value"
+                  >Key Value <span class="required">*</span></label
+                >
+                <div class="input-with-toggle">
+                  <input
+                    type="password"
+                    id="key-value"
+                    required
+                    placeholder="Enter your key/token"
+                  />
+                  <button
+                    type="button"
+                    class="toggle-visibility"
+                    data-target="key-value"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="key-desc">Description (Optional)</label>
+                <textarea
+                  id="key-desc"
+                  rows="3"
+                  placeholder="Add any notes about this key..."
+                ></textarea>
+              </div>
+
+              <div class="form-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="generate-btn"
+                >
+                  <i class="fas fa-bolt"></i> Generate Secure Key
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-lock"></i> Secure Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="keys-list-section" data-motion="fadeInUp">
+          <div class="section-header">
+            <h2><i class="fas fa-key"></i> Your Secure Keys</h2>
+            <div class="search-filter">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="search-keys"
+                  placeholder="Search keys..."
+                />
+              </div>
+              <select id="filter-keys">
+                <option value="all">All Keys</option>
+                <option value="api">API Keys</option>
+                <option value="public">Public Keys</option>
+                <option value="private">Private Keys</option>
+                <option value="secret">Secret Keys</option>
+                <option value="token">Tokens</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="keys-grid" id="keys-container">
+            <!-- Keys will be dynamically inserted here -->
+            <div class="empty-state">
+              <i class="fas fa-key"></i>
+              <h3>No Keys Saved Yet</h3>
+              <p>Add your first API key above to get started</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="key-details-modal">
+      <div class="modal-content glass-card">
+        <button class="close-modal">&times;</button>
+        <h2 id="modal-key-name"></h2>
+        <div class="key-meta">
+          <span class="key-type-badge" id="modal-key-type"></span>
+          <span class="key-service-badge" id="modal-key-service"></span>
+          <span class="key-date" id="modal-key-date"></span>
+        </div>
+
+        <div class="key-value-container">
+          <label>Key Value</label>
+          <div class="input-with-toggle">
+            <input type="password" id="modal-key-value" readonly />
+            <button
+              type="button"
+              class="toggle-visibility"
+              data-target="modal-key-value"
+            >
+              <i class="fas fa-eye"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-copy"
+              data-target="modal-key-value"
+            >
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="key-desc-container">
+          <label>Description</label>
+          <div id="modal-key-desc"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="edit-key-btn">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="btn btn-danger" id="delete-key-btn">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="import-export-modal">
+      <div class="modal-content glass-card">
+        <button class="close-modal">&times;</button>
+        <h2 id="ie-modal-title"></h2>
+        <div class="ie-modal-content" id="ie-modal-content">
+          <!-- Content will be dynamically inserted -->
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
