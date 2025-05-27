@@ -1,61 +1,87 @@
 class NetworkMonitor {
   constructor() {
-    this.wifiStatus = document.getElementById("wifi-status");
     this.offlineOverlay = document.getElementById("offline-overlay");
-    this.lastOnline = true;
+    this.wifiIndicator = document.getElementById("wifi-indicator");
+    this.wifiIcon = this.wifiIndicator.querySelector(".wifi-icon");
+    this.wifiText = this.wifiIndicator.querySelector(".wifi-text");
+    this.lastState = null;
 
     // Initial check
-    this.handleConnectionChange();
+    this.checkConnection(true);
 
-    // Event listeners
-    window.addEventListener("online", this.handleConnectionChange.bind(this));
-    window.addEventListener("offline", this.handleConnectionChange.bind(this));
+    // Event listeners for immediate response
+    window.addEventListener("online", () => this.handleConnection(true));
+    window.addEventListener("offline", () => this.handleConnection(false));
 
-    // Continuous monitoring (for cases where events don't fire)
-    setInterval(() => this.checkConnection(), 5000);
+    // Active monitoring with fast interval
+    this.checkInterval = setInterval(() => {
+      this.activeConnectionCheck();
+    }, 1000); // Check every second
+
+    // First active check immediately
+    this.activeConnectionCheck();
   }
 
-  checkConnection() {
-    // More reliable than navigator.onLine for WiFi detection
-    fetch("https://connectivitycheck.gstatic.com/generate_204", {
-      method: "HEAD",
-      mode: "no-cors",
-      cache: "no-store",
-    })
-      .then(() => {
-        if (!navigator.onLine) this.handleConnectionChange(true);
-      })
-      .catch(() => {
-        if (navigator.onLine) this.handleConnectionChange(false);
+  async activeConnectionCheck() {
+    try {
+      // Use a fast-checking endpoint with timeout
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 1500);
+
+      await fetch("https://connectivitycheck.gstatic.com/generate_204", {
+        method: "HEAD",
+        mode: "no-cors",
+        cache: "no-store",
+        signal: controller.signal,
       });
+
+      clearTimeout(timeout);
+      this.handleConnection(true);
+    } catch {
+      this.handleConnection(false);
+    }
   }
 
-  handleConnectionChange(forceState) {
-    const isOnline = forceState !== undefined ? forceState : navigator.onLine;
+  handleConnection(isOnline) {
+    if (this.lastState === isOnline) return;
+    this.lastState = isOnline;
 
-    if (isOnline === this.lastOnline) return;
-    this.lastOnline = isOnline;
+    // Update body class for overflow control
+    document.body.classList.toggle("offline-mode", !isOnline);
 
     if (isOnline) {
-      this.wifiStatus.style.display = "flex";
+      // Connection restored - INSTANT UPDATE
       this.offlineOverlay.classList.remove("active");
+      this.wifiIndicator.classList.remove("offline");
+      this.wifiIcon.classList.replace("fa-unlink", "fa-wifi");
+      this.wifiText.textContent = "Secure Connection";
 
-      // Add celebration effect
-      this.wifiStatus.style.animation = "none";
-      void this.wifiStatus.offsetWidth; // Trigger reflow
-      this.wifiStatus.style.animation = "celebrate 0.5s ease";
-
-      setTimeout(() => {
-        this.wifiStatus.style.animation = "";
-      }, 500);
+      // Visual confirmation
+      this.wifiIndicator.style.animation = "celebrate 0.5s";
+      setTimeout(() => (this.wifiIndicator.style.animation = ""), 500);
     } else {
-      this.wifiStatus.style.display = "none";
+      // Connection lost - INSTANT UPDATE
       this.offlineOverlay.classList.add("active");
+      this.wifiIndicator.classList.add("offline");
+      this.wifiIcon.classList.replace("fa-wifi", "fa-unlink");
+      this.wifiText.textContent = "No Connection";
+
+      // Haptic feedback if available
+      if (navigator.vibrate) navigator.vibrate(200);
     }
+  }
+
+  // Initial check with visual feedback
+  checkConnection(initial = false) {
+    const wasOnline = navigator.onLine;
+    this.activeConnectionCheck().then(() => {
+      if (initial && !wasOnline) {
+        // Force UI update on initial load if offline
+        this.handleConnection(false);
+      }
+    });
   }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  new NetworkMonitor();
-});
+// Start monitoring immediately
+document.addEventListener("DOMContentLoaded", () => new NetworkMonitor());
